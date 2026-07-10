@@ -1,0 +1,6 @@
+{
+  "name": "Resume Roast",
+  "description": "Instantly identify weaknesses in your resume and receive actionable feedback with a funny but professional AI roast.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
