@@ -47,7 +47,7 @@ Unlike polite resume reviewers that coddle you with "great job!", this app tells
 
 ## 🚀 How to Use
 
-1. **Visit the App**: Go to (https://ai.studio/apps/820ad3de-0d45-40ee-a9e3-161365253a75) (or run locally)
+1. **Visit the App**: Go to ([https://ai.studio/apps/820ad3de-0d45-40ee-a9e3-161365253a75](https://ais-pre-lqd5agaxzjbore5klr6v4r-541935170945.asia-southeast1.run.app/)) (or run locally)
 2. **Upload Resume**: Drag & drop your PDF (max 5MB)
 3. **Get Roasted**: Watch as the AI dismantles your career narrative
 4. **Fix & Repeat**: Implement the feedback, upload again, see if you survive round 2
