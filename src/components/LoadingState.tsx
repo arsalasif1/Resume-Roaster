@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Loader2, Flame } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import AnimatedCatGrill from "./AnimatedCatGrill";
 
 const ROAST_PHRASES = [
   "Firing up the grill... 🥩",
@@ -45,16 +46,14 @@ export default function LoadingState() {
       id="analysis-loading-state"
       className="flex flex-col items-center justify-center py-12 px-6 text-center bg-gray-900/40 border border-orange-500/20 rounded-2xl shadow-xl shadow-orange-500/[0.02] max-w-lg mx-auto"
     >
-      <div className="relative flex items-center justify-center mb-6">
-        {/* Fire glow animation background */}
-        <div className="absolute w-20 h-20 bg-orange-500/15 rounded-full blur-xl animate-pulse" />
+      <div className="relative flex flex-col items-center justify-center mb-10 mt-4">
+        {/* Animated cat grill with active roasting mode */}
+        <AnimatedCatGrill isRoasting={true} size="md" />
         
-        {/* Spinning loading outer, and a flame icon in the center */}
-        <div className="relative">
-          <Loader2 className="w-16 h-16 text-orange-500 animate-spin" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Flame className="w-6 h-6 text-red-500 animate-bounce" />
-          </div>
+        {/* Soft rotating loader around the bottom or as a mini spinner */}
+        <div className="flex items-center space-x-1.5 text-orange-500/80 text-xs font-mono mt-6">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          <span>Intense Grilling Mode Engaged</span>
         </div>
       </div>
 

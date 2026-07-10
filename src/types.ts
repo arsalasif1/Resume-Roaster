@@ -10,6 +10,7 @@ export interface ExtractResponse {
   text: string;
   wordCount: number;
   fileName: string;
+  totalUniqueCount?: number;
 }
 
 export interface RoastResponse {

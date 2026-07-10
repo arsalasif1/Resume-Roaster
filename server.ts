@@ -1,12 +1,47 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import fs from "fs";
+import crypto from "crypto";
 import * as pdf from "pdf-parse";
 import * as mammoth from "mammoth";
 import { GoogleGenAI, Type } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 
 dotenv.config();
+
+const COUNTER_FILE = path.join(process.cwd(), "resumes-counter.json");
+
+function getUniqueHashes(): Set<string> {
+  try {
+    if (fs.existsSync(COUNTER_FILE)) {
+      const data = fs.readFileSync(COUNTER_FILE, "utf-8");
+      const list = JSON.parse(data);
+      if (Array.isArray(list)) {
+        return new Set(list);
+      }
+    }
+  } catch (err) {
+    console.error("Failed to read counter file:", err);
+  }
+  return new Set();
+}
+
+function addResumeHash(text: string): number {
+  if (!text || text.trim().length < 30) return getUniqueHashes().size;
+  const hash = crypto.createHash("sha256").update(text.trim()).digest("hex");
+  const hashes = getUniqueHashes();
+  const initialSize = hashes.size;
+  hashes.add(hash);
+  if (hashes.size > initialSize) {
+    try {
+      fs.writeFileSync(COUNTER_FILE, JSON.stringify(Array.from(hashes)), "utf-8");
+    } catch (err) {
+      console.error("Failed to write counter file:", err);
+    }
+  }
+  return hashes.size;
+}
 
 const app = express();
 const PORT = 3000;
@@ -64,6 +99,16 @@ async function parseDocx(buffer: Buffer): Promise<string> {
   }
 }
 
+// Endpoint: Get unique resume count
+app.get("/api/resume-count", (req, res) => {
+  try {
+    const hashes = getUniqueHashes();
+    return res.json({ count: hashes.size });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to get count" });
+  }
+});
+
 // Endpoint: Extract text from resume
 app.post("/api/extract-text", async (req, res): Promise<any> => {
   try {
@@ -98,6 +143,9 @@ app.post("/api/extract-text", async (req, res): Promise<any> => {
       return res.status(400).json({ error: "We couldn't read your resume. Try another file." });
     }
 
+    // Save unique hash for counting
+    const totalUniqueCount = addResumeHash(cleanedText);
+
     // Calculate word count
     const wordCount = cleanedText.split(/\s+/).length;
 
@@ -105,6 +153,7 @@ app.post("/api/extract-text", async (req, res): Promise<any> => {
       text: cleanedText,
       wordCount,
       fileName,
+      totalUniqueCount,
     });
   } catch (error: any) {
     console.error("API Error /api/extract-text:", error);
@@ -120,6 +169,9 @@ app.post("/api/roast", async (req, res): Promise<any> => {
     if (!resumeText || resumeText.trim().length < 30) {
       return res.status(400).json({ error: "We couldn't read your resume. Try another file." });
     }
+
+    // Register hash in case it was direct input
+    addResumeHash(resumeText);
 
     // Call Gemini API using structured JSON schema
     const prompt = `Roast this resume and provide a structured analysis.
